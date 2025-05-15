@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chat - AMU Query Bot{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<header class="custom-gradient text-white page-header py-20 mt-4">
+  <div class="container mx-auto px-4 text-center">
+    <h1 class="text-4xl md:text-5xl font-bold mb-4">Chat with AMUqBot</h1>
+    <p class="text-xl md:text-2xl opacity-90">
+      Get instant answers to your questions
+    </p>
+  </div>
+</header>
+
+<section class="py-16">
+  <div class="container mx-auto px-4">
+    <div class="max-w-4xl mx-auto">
+      <div class="custom-card card-border">
+        <div class="chat-messages" id="chat-messages">
+          {% for message in chat_history %}
+          <div class="message {% if message.user == request.user %}user-message{% else %}bot-message{% endif %}">
+            {% if message.user == request.user %}
+            <div class="message-content user">
+              <div class="flex items-start space-x-2">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                  <i class="fas fa-user text-[var(--maroon)]"></i>
+                </div>
+                <div class="flex-grow">
+                  <p class="text-white">{{ message.query }}</p>
+                  <small class="timestamp text-white/70">{{ message.timestamp|date:"M d, Y H:i" }}</small>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            <div class="message-content bot">
+              <div class="flex items-start space-x-2">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--maroon)] flex items-center justify-center">
+                  <i class="fas fa-robot text-white"></i>
+                </div>
+                <div class="flex-grow">
+                  <p class="text-gray-800">{{ message.response }}</p>
+                  <small class="timestamp text-gray-500">{{ message.timestamp|date:"M d, Y H:i" }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="chat-input">
+          <form id="chat-form">
+            <div class="flex space-x-4">
+              <input type="text" id="message-input" class="flex-1 px-4 py-3 rounded-md border border-gray-300 focus:border-[var(--maroon)] focus:ring focus:ring-[var(--maroon)] focus:ring-opacity-50 shadow-sm transition duration-150 ease-in-out" placeholder="Type your message..." required>
+              <button type="submit" class="px-8 py-3 text-white custom-gradient rounded-md hover:opacity-90 transition duration-300 flex items-center space-x-2">
+                <span>Send</span>
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .chat-messages {
+    height: 500px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: var(--bg-color);
+  }
+
+  .message {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .message-content {
+    max-width: 75%;
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .message-content.user {
+    margin-left: auto;
+    background: linear-gradient(135deg, var(--maroon) 0%, #b31409 100%);
+    color: white;
+    border-bottom-right-radius: 0.25rem;
+  }
+
+  .message-content.bot {
+    margin-right: auto;
+    background: white;
+    color: var(--text-color);
+    border: 1.5px solid var(--maroon);
+    border-bottom-left-radius: 0.25rem;
+  }
+
+  .message-content .flex {
+    gap: 1rem;
+  }
+
+  .message-content p {
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+  }
+
+  .message-content.user p {
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .message-content.bot p {
+    color: #1f2937;
+  }
+
+  .message-content.user .timestamp {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .message-content.bot .timestamp {
+    color: #6b7280;
+  }
+
+  .chat-input {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1.5px solid #e5e7eb;
+  }
+
+  /* Avatar styling */
+  .message-content .flex-shrink-0 {
+    margin-top: 0.25rem;
+  }
+
+  .message-content.user .flex-shrink-0 {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1.5px solid white;
+  }
+
+  .message-content.bot .flex-shrink-0 {
+    background: var(--maroon);
+    border: 1.5px solid var(--maroon);
+  }
+
+  /* Scrollbar Styling */
+  .chat-messages::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .chat-messages::-webkit-scrollbar-track {
+    background: var(--bg-color);
+    border-radius: 3px;
+  }
+
+  .chat-messages::-webkit-scrollbar-thumb {
+    background: var(--maroon);
+    border-radius: 3px;
+  }
+
+  .chat-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--green);
+  }
+
+  /* Message animations */
+  .message {
+    animation: slideIn 0.3s ease-out;
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Loading animation for waiting response */
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    background: rgba(156, 16, 6, 0.05);
+    border-radius: 1rem;
+    width: fit-content;
+  }
+
+  .typing-indicator span {
+    height: 8px;
+    width: 8px;
+    background: var(--maroon);
+    border-radius: 50%;
+    margin: 0 2px;
+    display: inline-block;
+    animation: bounce 1.4s infinite ease-in-out;
+  }
+
+  .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+  .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+  }
+
+  /* Input field and button styling */
+  #message-input {
+    font-size: 1rem;
+    background-color: #f9fafb;
+  }
+
+  #message-input:focus {
+    background-color: white;
+  }
+
+  .chat-input button {
+    font-weight: 500;
+  }
+
+  .chat-input button i {
+    transition: transform 0.2s ease;
+  }
+
+  .chat-input button:hover i {
+    transform: translateX(2px);
+  }
+</style>
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const chatMessages = document.getElementById('chat-messages');
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
+    let chatSocket;
+
+    // Scroll to bottom of chat
+    function scrollToBottom() {
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Initialize WebSocket connection
+    function connectWebSocket() {
+      const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+      const wsUrl = `${wsScheme}://${window.location.host}/ws/chat/`;
+      
+      chatSocket = new WebSocket(wsUrl);
+
+      chatSocket.onopen = function(e) {
+        console.log('WebSocket connection established');
+      };
+
+      chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        
+        if (data.type === 'chat') {
+          // Add bot message
+          const messageDiv = document.createElement('div');
+          messageDiv.className = 'message';
+          messageDiv.innerHTML = `
+            <div class="message-content bot">
+              <div class="flex items-start">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center">
+                  <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                <div class="flex-grow">
+                  <p>${data.message}</p>
+                  <small class="timestamp">${new Date().toLocaleString()}</small>
+                </div>
+              </div>
+            </div>
+          `;
+          chatMessages.appendChild(messageDiv);
+          scrollToBottom();
+        } else if (data.type === 'error') {
+          alert(data.message);
+        }
+      };
+
+      chatSocket.onclose = function(e) {
+        console.log('WebSocket connection closed');
+        // Try to reconnect after 5 seconds
+        setTimeout(connectWebSocket, 5000);
+      };
+
+      chatSocket.onerror = function(e) {
+        console.error('WebSocket error:', e);
+      };
+    }
+
+    // Handle form submission
+    chatForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const message = messageInput.value.trim();
+      
+      if (message && chatSocket.readyState === WebSocket.OPEN) {
+        // Add user message to chat
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message';
+        messageDiv.innerHTML = `
+          <div class="message-content user">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-[var(--maroon)] text-sm"></i>
+              </div>
+              <div class="flex-grow">
+                <p>${message}</p>
+                <small class="timestamp">${new Date().toLocaleString()}</small>
+              </div>
+            </div>
+          </div>
+        `;
+        chatMessages.appendChild(messageDiv);
+        scrollToBottom();
+
+        // Send message through WebSocket
+        chatSocket.send(JSON.stringify({
+          'message': message
+        }));
+
+        // Clear input
+        messageInput.value = '';
+      }
+    });
+
+    // Initial connection
+    connectWebSocket();
+    scrollToBottom();
+  });
+</script>
+{% endblock %}
+{% endblock %}
