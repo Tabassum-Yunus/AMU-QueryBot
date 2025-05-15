@@ -34,6 +34,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -42,9 +44,15 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'users',
     'core',
+    'main',
+    'tailwind',
+     'theme',
+      'django_browser_reload',
+      'widget_tweaks',
 ]
 
 MIDDLEWARE = [
+     "django_browser_reload.middleware.BrowserReloadMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -56,10 +64,17 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "amu_query_bot.urls"
 
+TAILWIND_APP_NAME = 'theme'
+INTERNAL_IPS = ['127.0.0.1']
+NPM_BIN_PATH = r"C:\\Program Files\\nodejs\\npm.cmd"
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ['templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -71,7 +86,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "amu_query_bot.wsgi.application"
+ASGI_APPLICATION = 'amu_query_bot.asgi.application'
+# WSGI_APPLICATION = "amu_query_bot.wsgi.application"
 AUTH_USER_MODEL='users.User'
 
 # Database
@@ -125,3 +141,19 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# Cache configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+# Channel Layer Configuration
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
