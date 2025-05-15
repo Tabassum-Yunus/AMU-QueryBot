@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Feedback - AMU Query Bot{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<header class="custom-gradient text-white page-header py-20 mt-4">
+  <div class="container mx-auto px-4 text-center">
+    <h1 class="text-4xl md:text-5xl font-bold mb-4">Share Your Feedback</h1>
+    <p class="text-xl md:text-2xl opacity-90">
+      Help us improve your experience
+    </p>
+  </div>
+</header>
+
+<section class="py-16">
+  <div class="container mx-auto px-4">
+    <div class="max-w-2xl mx-auto">
+      <div class="custom-card card-border">
+        <form class="space-y-6" method="POST">
+          {% csrf_token %}
+
+          <!-- Rating Section -->
+          <div class="mb-8">
+            <label class="block text-sm md:text-base font-medium text-gray-700 mb-4">
+              Rate your experience
+            </label>
+            <div class="flex flex-wrap justify-center gap-4">
+              {% for value, label in rating_choices %}
+              <div class="flex flex-col items-center">
+                <input type="radio" name="rating" value="{{ value }}" id="rating{{ value }}" class="hidden peer" required />
+                <label for="rating{{ value }}" class="w-12 h-12 flex items-center justify-center rounded-full border-2 border-[var(--maroon)] cursor-pointer transition-all duration-200 peer-checked:bg-[var(--maroon)] peer-checked:text-white hover:bg-[var(--maroon)]/10 text-xl">
+                  ★
+                </label>
+                <span class="mt-1 text-sm text-gray-600">{{ value }}</span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Comments Section -->
+          <div class="space-y-2">
+            <label for="comments" class="block text-sm md:text-base font-medium text-gray-700">
+              Additional Comments
+            </label>
+            <textarea name="comments" id="comments" rows="4" class="block w-full px-4 py-3 rounded-md border border-gray-300 focus:border-[var(--maroon)] focus:ring focus:ring-[var(--maroon)] focus:ring-opacity-50 shadow-sm transition duration-150 ease-in-out resize-none" placeholder="Share your thoughts and suggestions..."></textarea>
+          </div>
+
+          {% if messages %}
+          <div class="space-y-4">
+            {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+              {{ message }}
+              <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="text-center mt-8">
+            <button type="submit" class="px-8 py-3 text-white custom-gradient rounded-md hover:opacity-90 transition duration-300">
+              Submit Feedback
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  input[type="radio"] + label {
+    color: #d1d5db;
+  }
+
+  input[type="radio"]:checked + label,
+  input[type="radio"] + label:hover {
+    color: #fbbf24;
+  }
+</style>
+{% endblock %}
