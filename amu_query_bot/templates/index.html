@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - AMU Query Bot{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<header class="pb-12 text-white custom-gradient py-20 mt-4">
+  <div class="container mx-auto px-4 text-center">
+    <h1 class="text-4xl md:text-5xl font-bold mb-4">Welcome to AMU Query Bot</h1>
+    <p class="text-xl md:text-2xl opacity-90">
+      Your intelligent assistant for all AMU-related queries
+    </p>
+  </div>
+</header>
+
+<!-- About Section -->
+<section class="py-16">
+  <div class="container mx-auto px-4 max-w-4xl">
+    <h2 class="text-3xl font-bold mb-8 text-center">About AMUqBot</h2>
+    <div class="custom-card card-border">
+      <p class="leading-relaxed text-lg">
+        AMUqBot is your intelligent assistant designed to help you with all your queries related to Aligarh Muslim University. 
+        Whether you need information about academics, admissions, campus life, or any other aspect of AMU, we're here to help 
+        you get quick and accurate answers.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4 max-w-4xl">
+    <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">Features</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Feature 1 -->
+      <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition duration-300 card-border">
+        <div class="text-center mb-4 icon-color">
+          <i class="fas fa-graduation-cap text-4xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2 text-center">Academic Information</h3>
+        <p class="text-center">
+          Get detailed information about courses, departments, and academic procedures.
+        </p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition duration-300 card-border">
+        <div class="text-center mb-4 icon-color">
+          <i class="fas fa-calendar-alt text-4xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2 text-center">Events & Updates</h3>
+        <p class="text-center">
+          Stay updated with the latest events, news, and announcements from AMU.
+        </p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition duration-300 card-border">
+        <div class="text-center mb-4 icon-color">
+          <i class="fas fa-comments text-4xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2 text-center">24/7 Support</h3>
+        <p class="text-center">
+          Get instant answers to your queries any time of the day.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-16">
+  <div class="container mx-auto px-4 max-w-4xl">
+    <div class="custom-card card-border text-center">
+      <h2 class="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+      <p class="mb-8 text-lg">Join AMUqBot today and get instant answers to all your AMU-related questions.</p>
+      <div class="flex justify-center space-x-4">
+        {% if user.is_authenticated %}
+        <a href="{% url 'chat-lobby' %}" class="px-8 py-3 text-white custom-gradient rounded-md hover:opacity-90 transition duration-300">
+          Start Chatting
+        </a>
+        {% else %}
+        <a href="{% url 'signup' %}" class="px-8 py-3 text-white custom-gradient rounded-md hover:opacity-90 transition duration-300">
+          Sign Up Now
+        </a>
+        <a href="{% url 'login' %}" class="px-8 py-3 border border-[var(--maroon)] text-[var(--maroon)] rounded-md hover:bg-[var(--maroon)] hover:text-white transition duration-300">
+          Login
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
