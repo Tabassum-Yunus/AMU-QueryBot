@@ -1,0 +1,51 @@
+{% extends 'base.html' %} 
+{% load widget_tweaks %}
+
+{% block title %}Update Profile - AMU Query Bot{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<header class="custom-gradient text-white page-header py-20 mt-4">
+  <div class="container mx-auto px-4 text-center">
+    <h1 class="text-4xl md:text-5xl font-bold mb-4">Update Profile</h1>
+    <p class="text-xl md:text-2xl opacity-90">
+      Manage your account information
+    </p>
+  </div>
+</header>
+
+<section class="py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-2xl mx-auto">
+            <div class="custom-card card-border">
+                <form method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                    <div class="space-y-2">
+                        <label for="{{ field.id_for_label }}" class="block text-sm md:text-base font-medium text-gray-700">
+                            {{ field.label }}
+                        </label>
+                        {% render_field field class="w-full px-4 py-3 rounded-md border border-gray-300 focus:border-[var(--maroon)] focus:ring focus:ring-[var(--maroon)] focus:ring-opacity-50 shadow-sm transition duration-150 ease-in-out" placeholder=field.label %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <p class="text-[var(--maroon)] text-sm mt-1">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                        {% if field.help_text %}
+                            <p class="text-sm text-gray-500 mt-1">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="text-center mt-8">
+                        <button type="submit" class="px-8 py-3 text-white custom-gradient rounded-md hover:opacity-90 transition duration-300">
+                            Update Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

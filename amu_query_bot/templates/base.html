@@ -1,0 +1,186 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="AMU Query Bot - Your intelligent assistant for all AMU-related queries"
+    />
+    <title>{% block title %}AMU Query Bot{% endblock %}</title>
+    {% tailwind_css %}
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <style>
+      :root {
+        --bg-color: #faf9f6;
+        --maroon: #9c1006;
+        --green: #136c38;
+        --text-color: #333333;
+        --secondary-bg: #e8e8e8;
+      }
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .custom-gradient {
+        background: linear-gradient(to right, var(--maroon), var(--green));
+      }
+      .card-border {
+        border-top: 3px solid var(--maroon);
+      }
+      .brand-color {
+        color: var(--maroon);
+      }
+      .icon-color {
+        color: var(--maroon);
+      }
+      .custom-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        transition: transform 0.3s;
+      }
+      .custom-card:hover {
+        transform: scale(1.02);
+      }
+      .link-hover:hover {
+        color: var(--maroon);
+        transition: color 0.3s;
+      }
+      .page-header {
+        padding-top: 5rem;
+        padding-bottom: 3rem;
+      }
+      .alert {
+        position: relative;
+        padding: 1rem 3rem 1rem 1rem;
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+        animation: slideIn 0.3s ease-out;
+      }
+      .alert-success {
+        background-color: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: var(--green);
+      }
+      .alert-error {
+        background-color: #fef2f2;
+        border: 1px solid #fecaca;
+        color: var(--maroon);
+      }
+      .alert-close {
+        position: absolute;
+        top: 50%;
+        right: 1rem;
+        transform: translateY(-50%);
+        cursor: pointer;
+        opacity: 0.5;
+        transition: opacity 0.3s;
+      }
+      .alert-close:hover {
+        opacity: 1;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateY(-100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      main {
+        flex: 1;
+      }
+    </style>
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center space-x-8">
+            <a href="{% url 'home' %}" class="text-xl font-bold brand-color">AMUqBot</a>
+            <div class="hidden md:flex space-x-6">
+              <a href="{% url 'home' %}" class="text-gray-700 link-hover">Home</a>
+              <a href="{% url 'about' %}" class="text-gray-700 link-hover">About</a>
+              {% if user.is_authenticated %}
+              <a href="{% url 'chat-lobby' %}" class="text-gray-700 link-hover">Chat</a>
+              <a href="{% url 'submit_feedback' %}" class="text-gray-700 link-hover">Rate Us</a>
+              <a href="{% url 'update_account' %}" class="text-gray-700 link-hover">Profile Update</a>
+              {% endif %}
+            </div>
+          </div>
+          <div class="hidden md:flex items-center space-x-4">
+            {% if user.is_authenticated %}
+            <form action="{% url 'logout' %}" method="post" class="inline">
+              {% csrf_token %}
+              <button type="submit" class="text-gray-700 link-hover">Logout</button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}" class="text-gray-700 link-hover">Login</a>
+            <a href="{% url 'signup' %}" class="px-4 py-2 text-white custom-gradient rounded-md hover:opacity-90 transition duration-300">Sign Up</a>
+            {% endif %}
+          </div>
+          <button class="md:hidden text-gray-700 hover:text-blue-600" onclick="toggleMenu()">
+            <i class="fas fa-bars text-2xl"></i>
+          </button>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden pb-4">
+          <a href="{% url 'home' %}" class="block py-2 text-gray-700 hover:text-blue-600">Home</a>
+          <a href="{% url 'about' %}" class="block py-2 text-gray-700 hover:text-blue-600">About</a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'chat-lobby' %}" class="block py-2 text-gray-700 hover:text-blue-600">Chat</a>
+          <form action="{% url 'logout' %}" method="post" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="block w-full text-left py-2 text-gray-700 hover:text-blue-600">Logout</button>
+          </form>
+          {% else %}
+          <a href="{% url 'login' %}" class="block py-2 text-gray-700 hover:text-blue-600">Login</a>
+          <a href="{% url 'signup' %}" class="block py-2 text-gray-700 hover:text-blue-600">Sign Up</a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+      {% if messages %}
+      <div class="container mx-auto px-4 pt-20">
+        {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}" role="alert">
+          {{ message }}
+          <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="custom-gradient text-white py-8 mt-auto">
+      <div class="container mx-auto px-4 text-center">
+        <p>&copy; {% now "Y" %} AMUqBot. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      function toggleMenu() {
+        const menu = document.getElementById("mobile-menu");
+        menu.classList.toggle("hidden");
+      }
+    </script>
+  </body>
+</html>
