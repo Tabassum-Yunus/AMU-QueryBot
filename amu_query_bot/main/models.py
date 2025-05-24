@@ -17,5 +17,16 @@ class Feedback(models.Model):
 
     class Meta:
         verbose_name = "Feedback"
-        verbose_name_plural = "Feedback"
+        verbose_name_plural = "Feedbacks"
         ordering = ['-submitted_at']
+
+
+class Resource(models.Model):
+
+    url = models.URLField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    file = models.FileField(upload_to ='uploads/', blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Resource"
+        verbose_name_plural = "Resources"
