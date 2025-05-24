@@ -36,6 +36,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'daphne',
     'channels',
+    'jet',
+    'jet.dashboard',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -46,9 +48,9 @@ INSTALLED_APPS = [
     'core',
     'main',
     'tailwind',
-     'theme',
-      'django_browser_reload',
-      'widget_tweaks',
+    'theme',
+    'django_browser_reload',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -137,6 +139,12 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+MEDIA_ROOT = BASE_DIR / "media"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -157,3 +165,33 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels.layers.InMemoryChannelLayer'
     }
 }
+
+JET_DEFAULT_THEME = 'green'
+# JET_SIDE_MENU_COMPACT = True
+JET_THEMES = [
+    {
+        'theme' : 'default',
+        'color' : '#47bac1',
+        'title' : 'default',
+    },
+    {
+        'theme' : 'green',
+        'color' : '#44b78b',
+        'title' : 'Green',
+    },
+    {
+        'theme' : 'violet',
+        'color' : '#44b',
+        'title' : 'Violet',
+    },
+    {
+        'theme' : 'light-blue',
+        'color' : '#5eadde',
+        'title' : 'Light-Blue',
+    },
+    {
+        'theme' : 'light-gray',
+        'color' : '#222',
+        'title' : 'Light-gray',
+    },
+]
