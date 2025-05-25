@@ -24,7 +24,7 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 EMBEDDING_MODEL = "text-embedding-3-large"
 CHAT_MODEL = "gpt-3.5-turbo"
 FAISS_INDEX_PATH = BASE_DIR / "core" / "faiss_index"
-DOCUMENTS_PATH = BASE_DIR / "documents"  # Directory where your documents will be stored
+DOCUMENTS_PATH = BASE_DIR / "documents"  # Directory where documents will be stored
 
 def load_documents():
     """Load documents from the documents directory"""
@@ -40,7 +40,7 @@ def load_documents():
         # Load all text files from the documents directory
         loader = DirectoryLoader(
             str(DOCUMENTS_PATH),
-            glob="**/*.txt",
+            glob="**/*.*",
             loader_cls=TextLoader,
             loader_kwargs={'encoding': 'utf-8'}
         )
@@ -179,7 +179,7 @@ def get_response(query):
         chain = get_qa_chain()
         
         # Invoke chain with the query
-        result = chain(query)
+        result = chain.invoke(query)
         
         # Extract answer
         if isinstance(result, dict):

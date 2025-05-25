@@ -18,10 +18,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
-    path("admin/", admin.site.urls),
     path("chat/", include("core.urls")),
     path("users/", include("users.urls")),
     path("", include("main.urls")),
-     path("__reload__/", include("django_browser_reload.urls")),
-]
+    path("__reload__/", include("django_browser_reload.urls")),
+    path('jet/', include("jet.urls", "jet")),
+    path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
+    path("admin/", admin.site.urls),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

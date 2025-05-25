@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Feedback
+from .models import Feedback, Resource
 
 @admin.register(Feedback)
 class FeedbackAdmin(admin.ModelAdmin):
@@ -8,3 +8,5 @@ class FeedbackAdmin(admin.ModelAdmin):
     search_fields = ('user__email', 'comments')
     readonly_fields = ('submitted_at',)
     ordering = ('-submitted_at',)
+
+admin.site.register(Resource)

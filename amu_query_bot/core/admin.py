@@ -8,3 +8,9 @@
 #     search_fields = ('user__email', 'message', 'response')
 #     readonly_fields = ('timestamp',)
 #     ordering = ('-timestamp',)
+
+
+from django.contrib import admin
+from .models import ChatMessage
+
+admin.site.register(ChatMessage)
