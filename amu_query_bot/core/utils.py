@@ -191,12 +191,3 @@ def get_response(query):
     except Exception as e:
         print(f"Error in get_response: {str(e)}")
         return "I apologize, but I encountered an error processing your request. Please try again."
-
-# Main loop to take user input in Colab
-# while True:
-#     query = input("Enter your query (or type 'exit' to quit): ")
-#     if query.lower() == 'exit':
-#         break
-#     print("\nProcessing...\n")
-#     response = get_response(query)
-#     print("Response:\n", response, "\n")
