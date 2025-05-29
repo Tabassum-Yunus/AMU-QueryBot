@@ -166,8 +166,8 @@ CHANNEL_LAYERS = {
     }
 }
 
-JET_DEFAULT_THEME = 'green'
-# JET_SIDE_MENU_COMPACT = True
+JET_DEFAULT_THEME = 'default'
+JET_SIDE_MENU_COMPACT = True
 JET_THEMES = [
     {
         'theme' : 'default',
