@@ -108,7 +108,7 @@
       <div class="container mx-auto px-4">
         <div class="flex justify-between items-center py-4">
           <div class="flex items-center space-x-8">
-            <a href="{% url 'home' %}" class="text-xl font-bold brand-color">AMUqBot</a>
+            <a href="{% url 'home' %}" class="text-xl font-bold brand-color">AMU QueryBot</a>
             <div class="hidden md:flex space-x-6">
               <a href="{% url 'home' %}" class="text-gray-700 link-hover">Home</a>
               <a href="{% url 'about' %}" class="text-gray-700 link-hover">About</a>
@@ -116,11 +116,15 @@
               <a href="{% url 'chat-lobby' %}" class="text-gray-700 link-hover">Chat</a>
               <a href="{% url 'submit_feedback' %}" class="text-gray-700 link-hover">Rate Us</a>
               <a href="{% url 'update_account' %}" class="text-gray-700 link-hover">Profile Update</a>
+              {% if user.is_superuser %}
+              <a href="{% url 'admin:index' %}" class="text-gray-700 link-hover">Dashboard</a>
+              {% endif %}
               {% endif %}
             </div>
           </div>
           <div class="hidden md:flex items-center space-x-4">
             {% if user.is_authenticated %}
+            <span class="text-gray-700">Hello, {{ user.email }}</span>
             <form action="{% url 'logout' %}" method="post" class="inline">
               {% csrf_token %}
               <button type="submit" class="text-gray-700 link-hover">Logout</button>
@@ -140,6 +144,9 @@
           <a href="{% url 'about' %}" class="block py-2 text-gray-700 hover:text-blue-600">About</a>
           {% if user.is_authenticated %}
           <a href="{% url 'chat-lobby' %}" class="block py-2 text-gray-700 hover:text-blue-600">Chat</a>
+          {% if user.is_superuser %}
+          <a href="{% url 'admin:index' %}" class="block py-2 text-gray-700 hover:text-blue-600">Dashboard</a>
+          {% endif %}
           <form action="{% url 'logout' %}" method="post" class="inline">
             {% csrf_token %}
             <button type="submit" class="block w-full text-left py-2 text-gray-700 hover:text-blue-600">Logout</button>
@@ -172,7 +179,7 @@
     <!-- Footer -->
     <footer class="custom-gradient text-white py-8 mt-auto">
       <div class="container mx-auto px-4 text-center">
-        <p>&copy; {% now "Y" %} AMUqBot. All rights reserved.</p>
+        <p>&copy; {% now "Y" %} AMU QueryBot. All rights reserved.</p>
       </div>
     </footer>
 

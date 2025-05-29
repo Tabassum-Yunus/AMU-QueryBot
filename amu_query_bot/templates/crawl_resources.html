@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crawl Resources - AMU Query Bot{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="custom-card card-border">
+        <h1 class="text-3xl font-bold mb-6 text-center">Export Resources</h1>
+        
+        <div class="space-y-6">
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700">
+                            This action will fetch all URLs and PDF links from the Resources table and export them to an Excel file.
+                            The file will be saved in the media/exports directory.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+                <div class="flex justify-center space-x-4">
+                    <button type="submit" class="px-8 py-3 text-white custom-gradient rounded-md hover:opacity-90 transition duration-300">
+                        Start Export
+                    </button>
+                    <a href="{% url 'home' %}" class="px-8 py-3 border border-[var(--maroon)] text-[var(--maroon)] rounded-md hover:bg-[var(--maroon)] hover:text-white transition duration-300">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 
