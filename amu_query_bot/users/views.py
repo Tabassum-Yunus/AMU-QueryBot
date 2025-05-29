@@ -34,7 +34,7 @@ def signup(request):
         form = forms.UserSignupForm(data=request.POST)
         if form.is_valid():
             login(request, form.save())
-            messages.success(request, "Account created successfully! Welcome to PeaceMindAI!")
+            messages.success(request, "Account created successfully! Welcome to AMU QueryBot!")
             return redirect("home")
         else:
             messages.error(request, "Please correct the errors below.")
