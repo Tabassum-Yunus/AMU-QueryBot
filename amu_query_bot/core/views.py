@@ -14,7 +14,7 @@ qa_chain = get_qa_chain()
 @login_required(login_url='login')
 def lobby(request):
     # Get chat history for the user
-    chat_history = ChatMessage.objects.filter(user=request.user).order_by('-timestamp')[:50]
+    chat_history = ChatMessage.objects.filter(user=request.user).order_by('timestamp')
     return render(request, 'chat/lobby.html', {'chat_history': chat_history})
 
 @login_required(login_url='login')
