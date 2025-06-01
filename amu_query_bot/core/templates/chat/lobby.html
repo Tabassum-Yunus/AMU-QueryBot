@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Chat - AMU Query Bot{% endblock %}
+{% block title %}Chat - AMU QueryBot{% endblock %}
 
 {% block content %}
 <!-- Header Section -->
 <header class="custom-gradient text-white page-header py-20 mt-4">
   <div class="container mx-auto px-4 text-center">
-    <h1 class="text-4xl md:text-5xl font-bold mb-4">Chat with AMUqBot</h1>
+    <h1 class="text-4xl md:text-5xl font-bold mb-4">Chat with AMU QueryBot</h1>
     <p class="text-xl md:text-2xl opacity-90">
       Get instant answers to your questions
     </p>
@@ -120,8 +120,12 @@
   }
 
   .message-content.bot p {
-    color: #1f2937;
-  }
+  color: #1f2937;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
 
   .message-content.user .timestamp {
     color: rgba(255, 255, 255, 0.8);
