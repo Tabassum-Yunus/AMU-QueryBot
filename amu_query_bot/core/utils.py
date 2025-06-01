@@ -11,7 +11,6 @@ from langchain_community.document_loaders import DirectoryLoader, TextLoader
 import pickle
 from pathlib import Path
 
-
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -109,7 +108,7 @@ def setup_retrievers(vector_store):
         weights=[0.7, 0.3]
     )
 
-# Define custom prompt template
+# Define custom prompt template with formatting instructions
 PROMPT_TEMPLATE = """
 You are an assistant providing information from AMU's official documents.
 Use the following extracted content to answer the query as accurately as possible.
@@ -150,44 +149,49 @@ def create_qa_chain():
             | StrOutputParser()
         )
         
-        return chain
+        return chain, retriever  # Return retriever for source access
     except Exception as e:
         print(f"Error creating QA chain: {str(e)}")
         raise
 
-# Global chain instance
+# Global chain and retriever instances
 qa_chain = None
+qa_retriever = None
 
 def get_qa_chain():
-    """Get or create the QA chain"""
-    global qa_chain
-    if qa_chain is None:
-        qa_chain = create_qa_chain()
-    return qa_chain
+    """Get or create the QA chain and retriever"""
+    global qa_chain, qa_retriever
+    if qa_chain is None or qa_retriever is None:
+        qa_chain, qa_retriever = create_qa_chain()
+    return qa_chain, qa_retriever
 
-# Initialize the chain at module level
-chain = get_qa_chain()
+# Initialize the chain and retriever at module level
+chain, retriever = get_qa_chain()
 
 def get_response(query):
-    """Process query and get response"""
+    """Process query and get response with formatted output and source link"""
     try:
         # Ensure query is a string
         if not isinstance(query, str):
             query = str(query)
         
-        # Get the chain
-        chain = get_qa_chain()
+        # Get the chain and retriever
+        chain, retriever = get_qa_chain()
+        
+        # Retrieve documents to extract source
+        retrieved_docs = retriever.invoke(query)
+        source = retrieved_docs[0].metadata.get('source', 'Unknown source') if retrieved_docs else 'Unknown source'
         
         # Invoke chain with the query
-        result = chain.invoke(query)
+        answer = chain.invoke(query).strip()
         
-        # Extract answer
-        if isinstance(result, dict):
-            answer = result.get("result", "No answer found in the response.").strip()
+        # Append source to the response
+        if answer == "I couldn't find this in AMU's documents.":
+            formatted_response = answer
         else:
-            answer = str(result).strip()
+            formatted_response = f"{answer}\n\n Source- {source}"
         
-        return answer
+        return formatted_response
     except Exception as e:
         print(f"Error in get_response: {str(e)}")
         return "I apologize, but I encountered an error processing your request. Please try again."
