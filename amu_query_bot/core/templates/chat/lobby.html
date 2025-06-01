@@ -273,24 +273,33 @@
         const data = JSON.parse(e.data);
         
         if (data.type === 'chat') {
-          // Add bot message
-          const messageDiv = document.createElement('div');
-          messageDiv.className = 'message';
-          messageDiv.innerHTML = `
-            <div class="message-content bot">
-              <div class="flex items-start">
-                <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center">
-                  <i class="fas fa-robot text-white text-sm"></i>
+          if (!data.is_final) {
+            // For streaming chunks, append to the last bot message or create a new one
+            let messageDiv = chatMessages.querySelector('.message:last-child');
+            if (!messageDiv || !messageDiv.classList.contains('bot-message')) {
+              messageDiv = document.createElement('div');
+              messageDiv.className = 'message bot-message';
+              messageDiv.innerHTML = `
+                <div class="message-content bot">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center">
+                      <i class="fas fa-robot text-white text-sm"></i>
+                    </div>
+                    <div class="flex-grow">
+                      <p></p>
+                      <small class="timestamp">${new Date().toLocaleString()}</small>
+                    </div>
+                  </div>
                 </div>
-                <div class="flex-grow">
-                  <p>${data.message}</p>
-                  <small class="timestamp">${new Date().toLocaleString()}</small>
-                </div>
-              </div>
-            </div>
-          `;
-          chatMessages.appendChild(messageDiv);
-          scrollToBottom();
+              `;
+              chatMessages.appendChild(messageDiv);
+            }
+            
+            // Append the new chunk to the message
+            const messageText = messageDiv.querySelector('p');
+            messageText.textContent += data.message;
+            scrollToBottom();
+          }
         } else if (data.type === 'error') {
           alert(data.message);
         }

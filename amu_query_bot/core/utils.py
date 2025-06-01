@@ -10,6 +10,7 @@ from langchain.prompts import PromptTemplate
 from langchain_community.document_loaders import DirectoryLoader, TextLoader
 import pickle
 from pathlib import Path
+from typing import AsyncGenerator, Generator
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -62,7 +63,8 @@ def initialize_llm():
     return ChatOpenAI(
         api_key=OPENAI_API_KEY,
         model_name=CHAT_MODEL,
-        temperature=0
+        temperature=0,
+        streaming=True  # Enable streaming
     )
 
 def load_or_create_vector_store():
@@ -168,8 +170,8 @@ def get_qa_chain():
 # Initialize the chain and retriever at module level
 chain, retriever = get_qa_chain()
 
-def get_response(query):
-    """Process query and get response with formatted output and source link"""
+async def get_response(query: str) -> AsyncGenerator[str, None]:
+    """Process query and stream response with formatted output and source link"""
     try:
         # Ensure query is a string
         if not isinstance(query, str):
@@ -182,16 +184,16 @@ def get_response(query):
         retrieved_docs = retriever.invoke(query)
         source = retrieved_docs[0].metadata.get('source', 'Unknown source') if retrieved_docs else 'Unknown source'
         
-        # Invoke chain with the query
-        answer = chain.invoke(query).strip()
+        # Stream the response
+        response_text = ""
+        async for chunk in chain.astream(query):
+            response_text += chunk
+            yield chunk
         
-        # Append source to the response
-        if answer == "I couldn't find this in AMU's documents.":
-            formatted_response = answer
-        else:
-            formatted_response = f"{answer}\n\n Source- {source}"
-        
-        return formatted_response
+        # After streaming is complete, yield the source if response was found
+        if response_text.strip() != "I couldn't find this in AMU's documents.":
+            yield f"\n\n Source- {source}"
+            
     except Exception as e:
         print(f"Error in get_response: {str(e)}")
-        return "I apologize, but I encountered an error processing your request. Please try again."
+        yield "I apologize, but I encountered an error processing your request. Please try again."
