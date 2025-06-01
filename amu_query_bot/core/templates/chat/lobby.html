@@ -258,6 +258,63 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    // Handle form submission
+    chatForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const message = messageInput.value.trim();
+      
+      if (message && chatSocket.readyState === WebSocket.OPEN) {
+        // Add user message to chat
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message';
+        messageDiv.innerHTML = `
+          <div class="message-content user">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-[var(--maroon)] text-sm"></i>
+              </div>
+              <div class="flex-grow">
+                <p>${message}</p>
+                <small class="timestamp">${new Date().toLocaleString()}</small>
+              </div>
+            </div>
+          </div>
+        `;
+        chatMessages.appendChild(messageDiv);
+        scrollToBottom();
+
+        // Add loading indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'message bot-message';
+        loadingDiv.innerHTML = `
+          <div class="message-content bot">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center">
+                <i class="fas fa-robot text-white text-sm"></i>
+              </div>
+              <div class="flex-grow">
+                <div class="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        chatMessages.appendChild(loadingDiv);
+        scrollToBottom();
+
+        // Send message through WebSocket
+        chatSocket.send(JSON.stringify({
+          'message': message
+        }));
+
+        // Clear input
+        messageInput.value = '';
+      }
+    });
+
     // Initialize WebSocket connection
     function connectWebSocket() {
       const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -273,6 +330,12 @@
         const data = JSON.parse(e.data);
         
         if (data.type === 'chat') {
+          // Remove loading indicator if it exists
+          const loadingIndicator = chatMessages.querySelector('.typing-indicator');
+          if (loadingIndicator) {
+            loadingIndicator.closest('.message').remove();
+          }
+
           if (!data.is_final) {
             // For streaming chunks, append to the last bot message or create a new one
             let messageDiv = chatMessages.querySelector('.message:last-child');
@@ -301,6 +364,11 @@
             scrollToBottom();
           }
         } else if (data.type === 'error') {
+          // Remove loading indicator if it exists
+          const loadingIndicator = chatMessages.querySelector('.typing-indicator');
+          if (loadingIndicator) {
+            loadingIndicator.closest('.message').remove();
+          }
           alert(data.message);
         }
       };
@@ -315,41 +383,6 @@
         console.error('WebSocket error:', e);
       };
     }
-
-    // Handle form submission
-    chatForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const message = messageInput.value.trim();
-      
-      if (message && chatSocket.readyState === WebSocket.OPEN) {
-        // Add user message to chat
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message';
-        messageDiv.innerHTML = `
-          <div class="message-content user">
-            <div class="flex items-start">
-              <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center">
-                <i class="fas fa-user text-[var(--maroon)] text-sm"></i>
-              </div>
-              <div class="flex-grow">
-                <p>${message}</p>
-                <small class="timestamp">${new Date().toLocaleString()}</small>
-              </div>
-            </div>
-          </div>
-        `;
-        chatMessages.appendChild(messageDiv);
-        scrollToBottom();
-
-        // Send message through WebSocket
-        chatSocket.send(JSON.stringify({
-          'message': message
-        }));
-
-        // Clear input
-        messageInput.value = '';
-      }
-    });
 
     // Initial connection
     connectWebSocket();
